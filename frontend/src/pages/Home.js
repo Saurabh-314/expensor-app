@@ -31,6 +31,7 @@ export default function Home() {
       <TransactionForm
         fetchTransctions={fetchTransctions}
         editTransaction={editTransaction}
+        setEditTransaction={setEditTransaction}
       />
 
       <TransactionsList

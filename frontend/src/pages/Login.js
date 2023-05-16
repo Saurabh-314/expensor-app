@@ -1,27 +1,23 @@
-import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
+import React, { useState } from 'react';
+import { Avatar, Backdrop, CircularProgress, Button, CssBaseline, TextField, FormControlLabel, Checkbox, Link, Grid, Box, Typography, Container, Snackbar } from '@mui/material';
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
 import Cookies from 'js-cookie';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../store/auth';
 
 export default function Login() {
+  const [backdropOpen, setBackdropOpen] = React.useState(false);
+  const [snackbar, setSnackbar] = React.useState(false);
+  const [transition, setTransition] = React.useState(undefined);
+  const [error, setError] = React.useState("");
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setBackdropOpen(true);
     const data = new FormData(event.currentTarget);
     const form = {
       email: data.get("email"),
@@ -34,16 +30,42 @@ export default function Login() {
         "content-type": "application/json",
       },
     })
-    const { token, user } = await res.json();
+
+    const resp = await res.json();
     if (res.ok) {
-      Cookies.set('token', token);
-      dispatch(setUser(user));
+      Cookies.set('token', resp.token);
+      dispatch(setUser(resp.user));
       navigate("/");
+    } else {
+      setBackdropOpen(false)
+      setSnackbar(true);
+      setTransition(() => 'TransitionUp');
+      setError(resp.message)
     }
   };
 
+  const handleClose = () => {
+    setSnackbar(false);
+  }
   return (
     <Container component="main" maxWidth="xs">
+      {/* Backdrop */}
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={backdropOpen}
+      // onClick={handleClose}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+      {/* Snackbar */}
+      <Snackbar
+        open={snackbar}
+        onClose={handleClose}
+        TransitionComponent={transition}
+        message={error}
+        key={transition ? transition.name : ''}
+      />
+
       <CssBaseline />
       <Box
         sx={{
@@ -80,10 +102,10 @@ export default function Login() {
             id="password"
             autoComplete="current-password"
           />
-          <FormControlLabel
+          {/* <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
-          />
+          /> */}
           <Button
             type="submit"
             fullWidth

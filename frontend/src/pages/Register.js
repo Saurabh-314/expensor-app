@@ -10,12 +10,22 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
+import Snackbar from '@mui/material/Snackbar';
+import Slide from '@mui/material/Slide';
 
 
 export default function Register() {
   const navigate = useNavigate();
+  const [backdropOpen, setBackdropOpen] = React.useState(false);
+  const [snackbar, setSnackbar] = React.useState(false);
+  const [transition, setTransition] = React.useState(undefined);
+  const [error, setError] = React.useState("");
+
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setBackdropOpen(true);
     const data = new FormData(event.currentTarget);
     const form = {
       firstName: data.get('firstName'),
@@ -30,15 +40,41 @@ export default function Register() {
         "content-type": "application/json",
       }
     })
-    console.log(res);
     if (res.ok) {
-      // console.log(res);
       navigate("/login");
+    } else {
+      const resp = await res.json();
+      setBackdropOpen(false)
+      setSnackbar(true);
+      setTransition(() => 'TransitionUp');
+      setError(resp.message)
+      // console.log(resp);
     }
   };
 
+  const handleClose = () => {
+    setSnackbar(false);
+  }
+
   return (
     <Container component="main" maxWidth="xs">
+      {/* Backdrop */}
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={backdropOpen}
+      // onClick={handleClose}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+      {/* Snackbar */}
+      <Snackbar
+        open={snackbar}
+        onClose={handleClose}
+        TransitionComponent={transition}
+        message={error}
+        key={transition ? transition.name : ''}
+      />
+
       <CssBaseline />
       <Box
         sx={{
@@ -98,7 +134,6 @@ export default function Register() {
                 autoComplete="new-password"
               />
             </Grid>
-
           </Grid>
           <Button
             type="submit"

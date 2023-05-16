@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import Cookies from 'js-cookie';
-import { Navigate, redirect, Outlet } from "react-router-dom";
-import { useDispatch, useSelector } from 'react-redux';
+import { Outlet } from "react-router-dom";
+import { useDispatch } from 'react-redux';
 import AppBar from './components/AppBar';
 import { setUser } from "./store/auth.js";
+import Loading from "./components/Loading";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -13,7 +14,6 @@ function App() {
 
   async function fetchUser() {
     setIsLoading(true);
-    // REACT_APP_API_URL="http://localhost:4000"
     const res = await fetch(`${process.env.REACT_APP_API_URL}/user`, {
       headers: {
         Authorization: `Bearer ${token}`
@@ -21,7 +21,6 @@ function App() {
     })
     if (res.ok) {
       const user = await res.json();
-      // console.log(user);
       dispatch(setUser(user));
     }
     setIsLoading(false);
@@ -33,7 +32,7 @@ function App() {
   }, [])
 
   if (isLoading) {
-    return <p>Loading...</p>
+    return <Loading />
   }
 
   return (

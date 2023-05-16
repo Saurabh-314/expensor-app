@@ -19,14 +19,16 @@ export default function TransactionsList({
   setEditTransaction,
 }) {
   const user = useSelector((state) => state.auth.user);
-  function categoryName(id) {
-    const category = user.categories.find((category) => category._id === id);
-    return category ? category.label : "NA";
-  }
+  // function categoryName(id) {
+  //   const category = user.categories.find((category) => category._id === id);
+  //   return category ? category.label : "NA";
+  // }
 
   async function remove(_id) {
     const token = Cookies.get("token");
-    if (!window.confirm("Are you sure")) return;
+    if (window.confirm("Are you sure")) {
+
+    }
     const res = await fetch(
       `${process.env.REACT_APP_API_URL}/transaction/${_id}`,
       {
@@ -57,7 +59,7 @@ export default function TransactionsList({
             <TableRow>
               <TableCell align="center">Amount</TableCell>
               <TableCell align="center">Description</TableCell>
-              <TableCell align="center">Category</TableCell>
+              {/* <TableCell align="center">Category</TableCell> */}
               <TableCell align="center">Date</TableCell>
               <TableCell align="center">Action</TableCell>
             </TableRow>
@@ -65,7 +67,8 @@ export default function TransactionsList({
           <TableBody>
             {data.map((month) =>
               month.transactions.map((row) => (
-                <TableRow
+                
+                <TableRow TableRow
                   key={row._id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
@@ -73,9 +76,9 @@ export default function TransactionsList({
                     {row.amount}
                   </TableCell>
                   <TableCell align="center">{row.description}</TableCell>
-                  <TableCell align="center">
+                  {/* <TableCell align="center">
                     {categoryName(row.category_id)}
-                  </TableCell>
+                  </TableCell> */}
                   <TableCell align="center">{formatDate(row.date)}</TableCell>
                   <TableCell align="center">
                     <IconButton
@@ -99,7 +102,7 @@ export default function TransactionsList({
             )}
           </TableBody>
         </Table>
-      </TableContainer>
+      </TableContainer >
     </>
   );
 }

@@ -16,19 +16,21 @@ const InitialForm = {
   amount: 0,
   description: "",
   date: new Date(),
-  category_id: "",
+  // category_id: "",
   type: "expenses",
 };
 
-export default function TransactionForm({ fetchTransctions, editTransaction }) {
-  const { categories } = useSelector((state) => state.auth.user);
+export default function TransactionForm({ fetchTransctions, editTransaction, setEditTransaction }) {
+  // const { categories } = useSelector((state) => state.auth.user);
   const token = Cookies.get("token");
   const [form, setForm] = useState(InitialForm);
-  const types = ["expense", "income", "transfer"];
+  const [editBtn, setEditBtn] = useState(false);
+  // const types = ["expense", "income", "transfer"];
 
   useEffect(() => {
     if (editTransaction.amount !== undefined) {
       setForm(editTransaction);
+      setEditBtn(true);
     }
   }, [editTransaction]);
 
@@ -49,6 +51,8 @@ export default function TransactionForm({ fetchTransctions, editTransaction }) {
     if (res.ok) {
       setForm(InitialForm);
       fetchTransctions();
+      setEditBtn(false);
+      setEditTransaction({})
     }
   }
 
@@ -79,11 +83,11 @@ export default function TransactionForm({ fetchTransctions, editTransaction }) {
     reload(res);
   }
 
-  function getCategoryNameById() {
-    return (
-      categories.find((category) => category._id === form.category_id) ?? ""
-    );
-  }
+  // function getCategoryNameById() {
+  //   return (
+  //     categories.find((category) => category._id === form.category_id) ?? ""
+  //   );
+  // }
 
   return (
     <Card sx={{ minWidth: 275, marginTop: 10 }}>
@@ -135,7 +139,7 @@ export default function TransactionForm({ fetchTransctions, editTransaction }) {
             />
           </LocalizationProvider>
 
-          <Autocomplete
+          {/* <Autocomplete
             value={getCategoryNameById()}
             onChange={(event, newValue) => {
               setForm({ ...form, category_id: newValue._id });
@@ -146,9 +150,19 @@ export default function TransactionForm({ fetchTransctions, editTransaction }) {
             renderInput={(params) => (
               <TextField {...params} size="small" label="Category" />
             )}
-          />
+          /> */}
 
-          {editTransaction.amount !== undefined && (
+          {
+            editBtn ?
+              <Button type="submit" variant="secondary">
+                Update
+              </Button>
+              :
+              <Button type="submit" variant="contained">
+                Submit
+              </Button>
+          }
+          {/* {editTransaction.amount !== undefined && (
             <Button type="submit" variant="secondary">
               Update
             </Button>
@@ -158,7 +172,7 @@ export default function TransactionForm({ fetchTransctions, editTransaction }) {
             <Button type="submit" variant="contained">
               Submit
             </Button>
-          )}
+          )} */}
         </Box>
       </CardContent>
     </Card>

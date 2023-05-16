@@ -14,7 +14,7 @@ export const register = async (req, res) => {
   const { firstName, lastName, email, password } = req.body;
   const userExists = await User.findOne({ email })
   if (userExists) {
-    return res.status(406).json({ message: "user already exists" });
+    return res.status(406).json({ message: "User already exists" });
   }
 
   const salt = bcrypt.genSaltSync(12);
@@ -35,11 +35,11 @@ export const login = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (!user) {
-    return res.status(406).json({ message: "credentials not found" });
+    return res.status(406).json({ message: "User not found" });
   }
   const matched = await bcrypt.compare(password, user.password);
   if (!matched) {
-    return res.status(406).json({ message: "credentials not found" });
+    return res.status(406).json({ message: "User Name or Password is incorrect" });
   }
 
   // create jwt token
